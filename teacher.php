@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
 if(!isset($_SESSION['language'])){
@@ -36,6 +40,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['language'] = $selectedLanguage;
             header('location:index.php');
             exit;
+        }
+    }
+    if(isset($_POST['upload'])){
+        if (isset($_FILES["latexFile"]) && $_FILES["latexFile"]["error"] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES["latexFile"]["tmp_name"];
+            $fileName = $_FILES["latexFile"]["name"];
+            $uploadPath = "/var/www/site52.webte.fei.stuba.sk/zaverecne/uploads/" . $fileName;
+
+            // Move the uploaded file to the desired location
+            if (move_uploaded_file($fileTmpPath, $uploadPath)) {
+                echo "File uploaded successfully.";
+            } else {
+                echo "Error uploading file.";
+            }
+        } else {
+            echo "Invalid file upload.";
         }
     }
 }
@@ -82,6 +102,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </ul>
     </div>
 </nav>
+
+<div>
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="form-control">
+        <input type="file" name="latexFile" id="latexFile" accept=".tex" required>
+        <input type="submit" name="upload" value="Upload">
+    </form>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
