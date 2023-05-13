@@ -14,4 +14,13 @@ $language = [
     'logout' => 'Logout',
     'name' => 'Name',
     'surname' => 'Surname',
+    'task_overview' => 'Task Overview', 
+    'task_id' => 'Task ID',
+    'latex_content' => 'Latex Content',
+    'completed' => 'Completed',
+    'solution' => 'Solution',
+    'submit_solution' => 'Submit Solution',
+    'generate_task' => 'Generate task',
+    'yes' => 'Yes',
+    'no' => 'No',
 ];

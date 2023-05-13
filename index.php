@@ -43,17 +43,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
     if(isset($_POST['loginform'])){
-        $sql = "SELECT login, password, 'student' AS user_type FROM student WHERE login = :login
-        UNION
-        SELECT login, password, 'teacher' AS user_type FROM teacher WHERE login = :login";
-
+        $sql = "SELECT id, login, password, 'student' AS user_type FROM student WHERE login = :login
+    UNION
+    SELECT id, login, password, 'teacher' AS user_type FROM teacher WHERE login = :login";
 
         $stmt = $pdo->prepare($sql);
 
         $stmt->bindParam(":login", $_POST["login"], PDO::PARAM_STR);
 
         if ($stmt->execute()) {
-            echo $stmt->rowCount();
             if ($stmt->rowCount() == 1) {
                 $row = $stmt->fetch();
                 $hashed_password = $row["password"];
@@ -61,12 +59,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (password_verify($_POST['password'], $hashed_password)) {
                     $_SESSION["loggedin"] = true;
                     $_SESSION["login"] = $row['login'];
+                    $_SESSION["user_id"] = $row['id']; // pridaná nová línia
                     if ($_SESSION['user_type'] == 'student') {
                         header("location: student.php");
                     } elseif ($_SESSION['user_type'] == 'teacher') {
                         header("location: teacher.php");
                     }
-
                 } else {
                     echo "Wrong name or password.";
                 }
@@ -80,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($stmt);
         unset($pdo);
     }
+
 }
 
 ?>

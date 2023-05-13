@@ -3,6 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+require_once 'config.php';
+
 session_start();
 
 if(!isset($_SESSION['language'])){
@@ -56,10 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
     }
+
     if(isset($_POST['upload'])){
         if (isset($_FILES["latexFile"]) && $_FILES["latexFile"]["error"] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES["latexFile"]["tmp_name"];
             $fileName = $_FILES["latexFile"]["name"];
+
             $uploadPath = "uploads/" . $fileName;
 
             $sql = "SELECT COUNT(*) FROM exercises WHERE exercise_file = :exercise_file";
@@ -67,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(":exercise_file", $fileName, PDO::PARAM_STR);
             $stmt->execute();
             $count = $stmt->fetchColumn();
-            if($count === 0){
+            if ($count === 0) {
                 if (move_uploaded_file($fileTmpPath, $uploadPath)) {
                     $sql = "INSERT INTO exercises (exercise_file) VALUES (:exercise_file)";
                     $stmt = $pdo->prepare($sql);
@@ -78,8 +82,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     echo "Error uploading file.";
                 }
             }
-        } else {
-            echo "Invalid file upload.";
         }
     }
 }
@@ -127,8 +129,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
 
+
 <div class="container text-center mt-5">
     <h1>Upload latex file</h1>
+<div>
     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="form-control">
         <input type="file" name="latexFile" id="latexFile" accept=".tex" required>
         <input type="submit" name="upload" value="Upload">

@@ -1,6 +1,12 @@
 <?php
 session_start();
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once('config.php');
+
 if(!isset($_SESSION['language'])){
     $_SESSION['language'] = "sk";
 }
@@ -9,13 +15,23 @@ $languageFile = 'languages/' . $selectedLanguage . '.php';
 
 require_once($languageFile);
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
-    if($_SESSION["user_type"] == "student"){
+    if(isset($_SESSION["user_type"]) && $_SESSION["user_type"] == "student"){
         $login = $_SESSION["login"];
     } else {
         header('Location: index.php');
         exit();
     }
 }
+
+
+try {
+    $pdo = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo $e->getMessage();
+}
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['english'])) {
         $_SESSION['language'] = "en";
@@ -38,7 +54,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
     }
+
+
+    if(isset($_POST['generate_task'])){
+
+
+        // TODO: handle selecting files
+        $fileName = "./uploads/blokovka01pr.tex";
+
+        // Parse the LaTeX file
+        $latexContent = file_get_contents($fileName);
+        $tasks = parseLatexFile($latexContent);
+        $randomTask = $tasks[array_rand($tasks)];
+
+        $stmt = $db->prepare("INSERT INTO task (student_id, exercise_id, text, solution, points, submitted)
+                                VALUES (:student_id, :exercise_id, :text, :solution, :points, :submitted)");
+
+        //TODO: get student id and exercise_id
+        // Bind the values to the named placeholders
+        $stmt->bindParam(':student_id', $studentId);
+        $stmt->bindParam(':exercise_id', $selectedExerciseId);
+        $stmt->bindParam(':text', $randomTask["task"]);
+        $stmt->bindParam(':solution', $randomTask["solution"]);
+        $stmt->bindParam(':points', 0);
+        $stmt->bindParam(':submited', 0);
+
+        $stmt->execute();
+        //TODO: show task
+    }
+
+    if(isset($_POST['submit_solution']) && isset($_POST['task_id']) && isset($_POST['solution']) && isset($_SESSION["user_id"])){
+        $taskId = $_POST['task_id'];
+        $solution = $_POST['solution'];
+
+        $stmt = $pdo->prepare("UPDATE task SET completed = TRUE, solution = :solution WHERE id = :task_id AND assigned_to = :user_id");
+        $stmt->execute(['solution' => $solution, 'task_id' => $taskId, 'user_id' => $_SESSION["user_id"]]);
+    }
+
 }
+// function to parse latex data as "task" and "solution"
+    function parseLatexFile($latexContent) {
+        $tasks = array();
+        preg_match_all('/\\\\begin{task}(.*?)\\\\end{task}.*?\\\\begin{solution}(.*?)\\\\end{solution}/s', $latexContent, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            $task = preg_replace('/\\\\includegraphics{.*?}/', '', trim($match[1]));
+            $solution = preg_replace('/\\\\begin{equation\*}|\\\\end{equation\*}|\\\dfrac|{|}/', '', trim($match[2]));
+            $tasks[] = array(
+                'task' => $task,
+                'solution' => trim($solution)
+            );
+        }
+        return $tasks;
+    }
+
 
 
 ?>
@@ -82,6 +150,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </ul>
     </div>
 </nav>
+
+<div class="container">
+    <h2><?php echo $language['task_overview'];?></h2>
+    <form action="#" method="post">
+        <input type="hidden" name="generate_task" value="true">
+        <button type="submit"><?php echo $language['generate_task'];?></button>
+    </form>
+    <table class="table">
+        <thead>
+        <tr>
+            <th><?php echo $language['task_id'];?></th>
+            <th><?php echo $language['latex_content'];?></th>
+            <th><?php echo $language['completed'];?></th>
+            <th><?php echo $language['solution'];?></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if (isset($_SESSION["user_id"])) {
+        $stmt = $pdo->prepare("SELECT * FROM task WHERE assigned_to = :user_id");
+        $stmt->execute(['user_id' => $_SESSION["user_id"]]);
+
+            if ($stmt->rowCount() > 0) {
+                while($task = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<tr>";
+                    echo "<td>" . $task["id"] . "</td>";
+                    echo "<td>" . $task["latex_content"] . "</td>";
+                    echo "<td>" . ($task["completed"] ? $language['yes'] : $language['no']) . "</td>";
+                    echo "<td>" . $task["solution"] . "</td>";
+                    echo "<td>";
+                    if(!$task["completed"]){
+                        echo "<form action='#' method='post'>
+                                    <input type='hidden' name='task_id' value='" . $task["id"] . "'>
+                                    <input type='text' name='solution'>
+                                    <input type='hidden' name='submit_solution' value='true'>
+                                    <button type='submit'>" . $language['submit_solution'] . "</button>
+                                </form>";
+                    }
+                    echo "</td>";
+                    echo "</tr>";
+                }
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
