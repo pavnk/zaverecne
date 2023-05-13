@@ -11,4 +11,5 @@ $language = [
     'role_select' => 'Zvoľ rolu používateľa',
     'registration' => 'Registrácia',
     'registration_success' => 'Boli ste úspešne registrovaní',
+    'logout' => 'Odhlásiť sa',
 ];

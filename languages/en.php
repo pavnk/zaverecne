@@ -10,5 +10,6 @@ $language = [
     'teacher' => 'Teacher',
     'role_select' => 'Select User Role',
     'registration' => 'Registration',
-    'registration_success' => 'You have been successfully registered'
+    'registration_success' => 'You have been successfully registered',
+    'logout' => 'Logout',
 ];

@@ -11,6 +11,16 @@ $languageFile = 'languages/' . $selectedLanguage . '.php';
 
 require_once($languageFile);
 
+if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+    if ($_SESSION['user_type'] == 'student') {
+        header("location: student.php");
+        exit();
+    } elseif ($_SESSION['user_type'] == 'teacher') {
+        header("location: teacher.php");
+        exit();
+    }
+}
+
 require_once 'config.php';
 
 try {
@@ -47,13 +57,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->rowCount() == 1) {
                 $row = $stmt->fetch();
                 $hashed_password = $row["password"];
-                $user_type = $row["user_type"];
+                $_SESSION['user_type'] = $row["user_type"];
                 if (password_verify($_POST['password'], $hashed_password)) {
                     $_SESSION["loggedin"] = true;
                     $_SESSION["login"] = $row['login'];
-                    if ($user_type == 'student') {
+                    if ($_SESSION['user_type'] == 'student') {
                         header("location: student.php");
-                    } elseif ($user_type == 'teacher') {
+                    } elseif ($_SESSION['user_type'] == 'teacher') {
                         header("location: teacher.php");
                     }
 
@@ -82,56 +92,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class=" navbar-collapse justify-content-md-center" id="navbarsExample08">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="./index.php"><?php echo $language['page_name']; ?></a>
-                </li>
-            </ul>
-        </div>
-        <div class="navbar-collapse justify-content-md-center" id="navbarsExample08">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <form action="#" method="post">
-                        <input type="hidden" name="english" value="en">
-                        <button type="submit"><img src="./images/enflag.png" alt="English Flag"></button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <form action="#" method="post">
-                        <input type="hidden" name="slovak" value="sk">
-                        <button type="submit"><img src="./images/skflag.png" alt="Slovak Flag"></button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container text-center mt-5">
-        <h1>Login</h1>
-
-        <form id="loginForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-        <div class="">
-                <label for="login">
-                    <?php echo $language['login_name'];?>:
-                    <input type="text" name="login" class="form-control" value="" id="login" required>
-                </label>
-                <span id="login-error"></span>
-            </div>
-            <br>
-            <div class="">
-                <label for="password">
-                    <?php echo $language['password'];?>:
-                    <input type="password" name="password" class="form-control" value="" id="password" required>
-                </label>
-                <span id="password-error"></span>
-            </div>
-            <br>
-            <button type="submit" name="loginform" class="btn btn-primary"><?php echo $language['login'];?>:</button>
-        </form>
-        <p><a href="register.php"><?php echo $language['register'];?></a></p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class=" navbar-collapse justify-content-md-center" id="navbarsExample08">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="./index.php"><?php echo $language['page_name']; ?></a>
+            </li>
+        </ul>
     </div>
+    <div class="navbar-collapse justify-content-md-center" id="navbarsExample08">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <form action="#" method="post">
+                    <input type="hidden" name="english" value="en">
+                    <button type="submit"><img src="./images/enflag.png" alt="English Flag"></button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form action="#" method="post">
+                    <input type="hidden" name="slovak" value="sk">
+                    <button type="submit"><img src="./images/skflag.png" alt="Slovak Flag"></button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container text-center mt-5">
+    <h1>Login</h1>
+
+    <form id="loginForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+        <div class="">
+            <label for="login">
+                <?php echo $language['login_name'];?>:
+                <input type="text" name="login" class="form-control" value="" id="login" required>
+            </label>
+            <span id="login-error"></span>
+        </div>
+        <br>
+        <div class="">
+            <label for="password">
+                <?php echo $language['password'];?>:
+                <input type="password" name="password" class="form-control" value="" id="password" required>
+            </label>
+            <span id="password-error"></span>
+        </div>
+        <br>
+        <button type="submit" name="loginform" class="btn btn-primary"><?php echo $language['login'];?>:</button>
+    </form>
+    <p><a href="register.php"><?php echo $language['register'];?></a></p>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
