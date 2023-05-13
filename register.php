@@ -39,14 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (isset($_POST['user_role'])) {
             $selectedUserRole = $_POST['user_role'];
-            if($selectedUserRole == 'student'){
-                if (studentExist($pdo, $_POST['login']) === true) {
-                    $errmsg .= "User with this e-mail / login already exists.</p>";
-                }
-            } else if($selectedUserRole == 'teacher'){
-                if (teacherExists($pdo, $_POST['login']) === true) {
-                    $errmsg .= "User with this e-mail / login already exists.</p>";
-                }
+            if (studentExist($pdo, $_POST['login']) === true) {
+                $errmsg .= "User with this e-mail / login already exists.</p>";
+            }
+            if (teacherExists($pdo, $_POST['login']) === true) {
+                $errmsg .= "User with this e-mail / login already exists.</p>";
             }
         }
 
@@ -67,16 +64,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errmsg .= "<p>Password can contain only small, large letters, numbers.</p>";
         }
 
+        if(checkEmpty($_POST['name']) === true){
+            $errmsg .="<p>Put in name.</p>";
+        } elseif(checkLength($_POST['name'],1,32) === false) {
+            $errmsg .= "<p>Name has to be at least 1 symbol long.</p>";
+        } elseif(checkName($_POST['name']) === false){
+            $errmsg .= "<p>Name can contain only small, large letters.</p>";
+        }
+
+        if(checkEmpty($_POST['surname']) === true){
+            $errmsg .="<p>Put in surname.</p>";
+        } elseif(checkLength($_POST['surname'],1,32) === false) {
+            $errmsg .= "<p>Surname needs to be at lest 1 symbol long.</p>";
+        } elseif(checkName($_POST['surname']) === false){
+            $errmsg .= "<p>Surname can contain only small, large letters.</p>";
+        }
+
         if (empty($errmsg)) {
-            $sql = "INSERT INTO " . $selectedUserRole . " (login, password) VALUES (:login, :password)";
+            $sql = "INSERT INTO " . $selectedUserRole . " (login, password, name, surname) VALUES (:login, :password, :name, :surname)";
 
             $login = $_POST['login'];
             $hashed_password = password_hash($_POST['password'], PASSWORD_ARGON2ID);
+            $name = $_POST['name'];
+            $surname = $_POST['surname'];
 
             $stmt = $pdo->prepare($sql);
 
             $stmt->bindParam(":login", $login, PDO::PARAM_STR);
             $stmt->bindParam(":password", $hashed_password, PDO::PARAM_STR);
+            $stmt->bindParam(":name", $name, PDO::PARAM_STR);
+            $stmt->bindParam(":surname", $surname, PDO::PARAM_STR);
             $stmt->execute();
             unset($stmt);
             $msg = $language['registration_success'];
@@ -111,6 +128,12 @@ function checkPassword($password){
         return true;
     }
     return false;
+}
+function checkName($name){
+    if (!preg_match('/^[a-zA-Z]+$/', trim($name))) {
+        return false;
+    }
+    return true;
 }
 function studentExist($db, $login) {
     $exist = false;
@@ -190,6 +213,16 @@ function teacherExists($db, $login) {
         <label for="password">
             <?php echo $language['password'];?>:
             <input type="password" name="password" class="form-control" value="" id="password" required>
+        </label>
+        <br>
+        <label for="name">
+            <?php echo $language['name'];?>:
+            <input type="name" name="name" class="form-control" value="" id="name" required>
+        </label>
+        <br>
+        <label for="surname">
+            <?php echo $language['surname'];?>:
+            <input type="surname" name="surname" class="form-control" value="" id="surname" required>
         </label>
         <br>
         <fieldset>
