@@ -12,4 +12,6 @@ $language = [
     'registration' => 'Registrácia',
     'registration_success' => 'Boli ste úspešne registrovaní',
     'logout' => 'Odhlásiť sa',
+    'name' => 'Meno',
+    'surname' => 'Priezvisko',
 ];

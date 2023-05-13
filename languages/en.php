@@ -12,4 +12,6 @@ $language = [
     'registration' => 'Registration',
     'registration_success' => 'You have been successfully registered',
     'logout' => 'Logout',
+    'name' => 'Name',
+    'surname' => 'Surname',
 ];

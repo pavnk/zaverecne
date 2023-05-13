@@ -19,7 +19,21 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
         header('Location: index.php');
         exit();
     }
+} else {
+    header('Location: index.php');
+    exit();
 }
+
+require_once 'config.php';
+
+try {
+    $pdo = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+} catch(PDOException $e) {
+    echo $e->getMessage();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['english'])) {
         $_SESSION['language'] = "en";
@@ -46,13 +60,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_FILES["latexFile"]) && $_FILES["latexFile"]["error"] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES["latexFile"]["tmp_name"];
             $fileName = $_FILES["latexFile"]["name"];
-            $uploadPath = "/var/www/site52.webte.fei.stuba.sk/zaverecne/uploads/" . $fileName;
+            $uploadPath = "uploads/" . $fileName;
 
-            // Move the uploaded file to the desired location
-            if (move_uploaded_file($fileTmpPath, $uploadPath)) {
-                echo "File uploaded successfully.";
-            } else {
-                echo "Error uploading file.";
+            $sql = "SELECT COUNT(*) FROM exercises WHERE exercise_file = :exercise_file";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(":exercise_file", $fileName, PDO::PARAM_STR);
+            $stmt->execute();
+            $count = $stmt->fetchColumn();
+            if($count === 0){
+                if (move_uploaded_file($fileTmpPath, $uploadPath)) {
+                    $sql = "INSERT INTO exercises (exercise_file) VALUES (:exercise_file)";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindParam(":exercise_file", $fileName, PDO::PARAM_STR);
+                    $stmt->execute();
+                    echo "File uploaded successfully.";
+                } else {
+                    echo "Error uploading file.";
+                }
             }
         } else {
             echo "Invalid file upload.";
@@ -103,11 +127,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
 
-<div>
+<div class="container text-center mt-5">
+    <h1>Upload latex file</h1>
     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="form-control">
         <input type="file" name="latexFile" id="latexFile" accept=".tex" required>
         <input type="submit" name="upload" value="Upload">
     </form>
+</div>
+
+<div class="container text-center mt-5">
+    <h1>All students</h1>
+    <div id="students"></div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -116,5 +147,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/js/tabulator.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
+<script src="studentsTable.js"></script>
 </body>
 </html>
