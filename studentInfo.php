@@ -3,9 +3,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once 'config.php';
-
 session_start();
+
+$studentId = $_GET['id'];
 
 if(!isset($_SESSION['language'])){
     $_SESSION['language'] = "sk";
@@ -29,9 +29,20 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
 require_once 'config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    $stmt = $db->prepare("SELECT e.id, e.file_name
+                          FROM exercise e
+                          WHERE NOT EXISTS (
+                              SELECT 1
+                              FROM student_exercise se
+                              WHERE e.id = se.exercise_id AND se.student_id = :studentId
+                          )");
+    $stmt->bindValue(':studentId', $studentId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $exercises = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
     echo $e->getMessage();
 }
@@ -58,28 +69,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
     }
+    if(isset($_POST['exerciseSubmit'])){
+        if (isset($_POST['exerciseSubmit'])) {
+            // Get the selected exercise ID from the dropdown
+            $selectedExerciseId = $_POST['exercise'];
 
-    if(isset($_POST['upload'])){
-        if (isset($_FILES["latexFile"]) && $_FILES["latexFile"]["error"] === UPLOAD_ERR_OK) {
-            $fileTmpPath = $_FILES["latexFile"]["tmp_name"];
-            $fileName = $_FILES["latexFile"]["name"];
+            if(isset($_POST['date-start'])){
 
-            $uploadPath = "uploads/" . $fileName;
+                if(isset($_POST['date-end'])){
 
-            $sql = "SELECT COUNT(*) FROM exercise WHERE file_name = :file_name";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(":file_name", $fileName, PDO::PARAM_STR);
-            $stmt->execute();
-            $count = $stmt->fetchColumn();
-            if ($count === 0) {
-                if (move_uploaded_file($fileTmpPath, $uploadPath)) {
-                    $sql = "INSERT INTO exercise (file_name) VALUES (:file_name)";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(":file_name", $fileName, PDO::PARAM_STR);
-                    $stmt->execute();
-                    echo "File uploaded successfully.";
-                } else {
-                    echo "Error uploading file.";
+                    if(isset($_POST['max-points'])){
+                        $startDate = $_POST['date-start'];
+                        $endDate = $_POST['date-end'];
+                        $maxPoints = $_POST['max-points'];
+
+                        $stmt = $db->prepare("INSERT INTO student_exercise (student_id, exercise_id, date_start, date_end, max_points)
+                            VALUES (:student_id, :exercise_id, :date_start, :date_end, :max_points)");
+
+                        $stmt->bindParam(':student_id', $studentId);
+                        $stmt->bindParam(':exercise_id', $selectedExerciseId);
+                        $stmt->bindParam(':date_start', $startDate);
+                        $stmt->bindParam(':date_end', $endDate);
+                        $stmt->bindParam(':max_points', $maxPoints);
+
+                        $stmt->execute();
+                    }
                 }
             }
         }
@@ -129,21 +143,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
 
-
-<div class="container text-center mt-5">
-    <h1>Upload latex file</h1>
 <div>
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="form-control">
-        <input type="file" name="latexFile" id="latexFile" accept=".tex" required>
-        <input type="submit" name="upload" value="Upload">
+    <form method="POST" action="">
+        <input type="hidden" name="id" value="<?php echo $studentId; ?>">
+        <label for="exercise">Select an exercise for this student:</label>
+        <select name="exercise" id="exercise">
+            <?php foreach ($exercises as $exercise): ?>
+                <option value="<?php echo $exercise['id']; ?>"><?php echo $exercise['file_name']; ?></option>
+            <?php endforeach; ?>
+        </select>
+        <br>
+        <label for="date-start">Start date:</label>
+        <input type="date" id="date-start" name="date-start">
+        <br>
+        <label for="date-end">End date:</label>
+        <input type="date" id="date-end" name="date-end">
+        <br>
+        <label for="max-points">Maximum obtainable points:</label>
+        <input type="number" id="max-points" name="max-points">
+        <br>
+        <input type="submit" name="exerciseSubmit" value="Submit">
     </form>
 </div>
 
-<div class="container text-center mt-5">
-    <h1>All students</h1>
-    <div id="students"></div>
 
-</div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

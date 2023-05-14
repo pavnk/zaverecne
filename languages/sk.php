@@ -14,4 +14,13 @@ $language = [
     'logout' => 'Odhlásiť sa',
     'name' => 'Meno',
     'surname' => 'Priezvisko',
+    'task_overview' => 'Prehľad úloh',
+    'task_id' => 'ID úlohy',
+    'latex_content' => 'Obsah latexu',
+    'completed' => 'Dokončené',
+    'solution' => 'Riešenie',
+    'submit_solution' => 'Odoslať riešenie',
+    'generate_task' => 'Generovať úlohu',
+    'yes' => 'Áno',
+    'no' => 'Nie',
 ];
