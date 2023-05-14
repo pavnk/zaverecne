@@ -32,8 +32,8 @@ try {
     $db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $db->prepare("SELECT e.id, e.exercise_file
-                          FROM exercises e
+    $stmt = $db->prepare("SELECT e.id, e.file_name
+                          FROM exercise e
                           WHERE NOT EXISTS (
                               SELECT 1
                               FROM student_exercise se
@@ -82,22 +82,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $startDate = $_POST['date-start'];
                         $endDate = $_POST['date-end'];
                         $maxPoints = $_POST['max-points'];
-                        $task_number = 0;
-                        $submited = 0;
-                        $gotten_points = 0;
 
-                        $stmt = $db->prepare("INSERT INTO student_exercise (student_id, exercise_id, date_start, date_end, max_points, task_number, submited, gotten_points)
-                            VALUES (:student_id, :exercise_id, :date_start, :date_end, :max_points, :task_number, :submited, :gotten_points)");
+                        $stmt = $db->prepare("INSERT INTO student_exercise (student_id, exercise_id, date_start, date_end, max_points)
+                            VALUES (:student_id, :exercise_id, :date_start, :date_end, :max_points)");
 
-                        // Bind the values to the named placeholders
                         $stmt->bindParam(':student_id', $studentId);
                         $stmt->bindParam(':exercise_id', $selectedExerciseId);
                         $stmt->bindParam(':date_start', $startDate);
                         $stmt->bindParam(':date_end', $endDate);
                         $stmt->bindParam(':max_points', $maxPoints);
-                        $stmt->bindParam(':task_number', $task_number);
-                        $stmt->bindParam(':submited', $submited);
-                        $stmt->bindParam(':gotten_points', $gotten_points);
 
                         $stmt->execute();
                     }
@@ -156,7 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label for="exercise">Select an exercise for this student:</label>
         <select name="exercise" id="exercise">
             <?php foreach ($exercises as $exercise): ?>
-                <option value="<?php echo $exercise['id']; ?>"><?php echo $exercise['exercise_file']; ?></option>
+                <option value="<?php echo $exercise['id']; ?>"><?php echo $exercise['file_name']; ?></option>
             <?php endforeach; ?>
         </select>
         <br>

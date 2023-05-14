@@ -7,8 +7,8 @@ function drawCountryTable(data) {
             name: data[i].name,
             surname: data[i].surname,
             id: data[i].student_id,
-            generatedExercises: data[i].generatedExercises || 0,
-            submittedExercises: data[i].submittedExercises || 0,
+            generatedExercises: data[i].generatedTasks || 0,
+            submittedExercises: data[i].submittedTasks || 0,
             earnedPoints: data[i].earnedPoints || 0,
         };
 

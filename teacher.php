@@ -66,16 +66,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $uploadPath = "uploads/" . $fileName;
 
-            $sql = "SELECT COUNT(*) FROM exercises WHERE exercise_file = :exercise_file";
+            $sql = "SELECT COUNT(*) FROM exercise WHERE file_name = :file_name";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(":exercise_file", $fileName, PDO::PARAM_STR);
+            $stmt->bindParam(":file_name", $fileName, PDO::PARAM_STR);
             $stmt->execute();
             $count = $stmt->fetchColumn();
             if ($count === 0) {
                 if (move_uploaded_file($fileTmpPath, $uploadPath)) {
-                    $sql = "INSERT INTO exercises (exercise_file) VALUES (:exercise_file)";
+                    $sql = "INSERT INTO exercise (file_name) VALUES (:file_name)";
                     $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(":exercise_file", $fileName, PDO::PARAM_STR);
+                    $stmt->bindParam(":file_name", $fileName, PDO::PARAM_STR);
                     $stmt->execute();
                     echo "File uploaded successfully.";
                 } else {

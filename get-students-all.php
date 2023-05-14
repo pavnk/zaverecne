@@ -5,10 +5,13 @@ try {
     $db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $query = "SELECT se.id, s.name, s.surname, s.id AS student_id, COUNT(se.exercise_id) AS generatedExercises, SUM(se.submited) AS submittedExercises, SUM(se.gotten_points) AS earnedPoints
-         FROM student_exercise se
-         RIGHT JOIN student s ON se.student_id = s.id
-         GROUP BY se.id, s.name, s.surname, s.id";
+    $query = "SELECT s.name, s.surname, s.id AS student_id,
+       COUNT(t.id) AS generatedTasks,
+       SUM(t.submitted) AS submittedTasks,
+       SUM(t.points) AS earnedPoints
+    FROM student s
+    LEFT JOIN task t ON s.id = t.student_id
+    GROUP BY s.id";
 
     $stmt = $db->query($query);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
