@@ -441,9 +441,3 @@ composer.lock
 *.css.map
 *.sass.map
 *.scss.map
-
-# Ignore all files and subdirectories within the "uploads" directory
-uploads/*
-
-# Include the "uploads" directory itself
-!uploads/.gitkeep
