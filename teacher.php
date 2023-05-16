@@ -63,14 +63,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_FILES["latexFile"]) && $_FILES["latexFile"]["error"] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES["latexFile"]["tmp_name"];
             $fileName = $_FILES["latexFile"]["name"];
-
+    
             $uploadPath = "uploads/" . $fileName;
-
+            if (!is_dir('uploads')) {
+                mkdir('uploads', 0777, true);
+            }
+    
+            if (!is_writable('uploads')) {
+                echo 'Directory not writable';
+                exit;
+            }
+    
             $sql = "SELECT COUNT(*) FROM exercise WHERE file_name = :file_name";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(":file_name", $fileName, PDO::PARAM_STR);
             $stmt->execute();
             $count = $stmt->fetchColumn();
+    
             if ($count === 0) {
                 if (move_uploaded_file($fileTmpPath, $uploadPath)) {
                     $sql = "INSERT INTO exercise (file_name) VALUES (:file_name)";
@@ -79,12 +88,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt->execute();
                     echo "File uploaded successfully.";
                 } else {
-                    echo "Error uploading file.";
+                    echo "File moving failed.";
                 }
+            } else {
+                echo "File already exists in database.";
             }
+        } else {
+            echo 'File upload error: ' . $_FILES["latexFile"]["error"];
         }
     }
-}
+    
+    }
 
 
 ?>
@@ -103,6 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li class="nav-item">
                 <a class="nav-link" href="./index.php"><?php echo $language['page_name']; ?></a>
             </li>
+            <li>
+            <a class="nav-link" href="./Documentation.php"><?php echo $language['documentation']; ?></a>
+        </li>
         </ul>
     </div>
     <div class="navbar-collapse justify-content-md-center" id="navbarsExample08">
@@ -144,13 +161,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div id="students"></div>
 
 </div>
+<br>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<button id="exportBtn" class="btn btn-primary">Export to CSV</button>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/js/tabulator.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
 <script src="studentsTable.js"></script>
+<script>
+    document.getElementById("exportBtn").addEventListener("click", function(){
+    table.download("csv", "students.csv");
+});
+
+</script>
+
 </body>
 </html>

@@ -36,6 +36,7 @@ if(isset($_SESSION["user_id"])) {
     $stmt = $pdo->prepare("SELECT * FROM student_exercise INNER JOIN exercise ON student_exercise.exercise_id = exercise.id WHERE student_exercise.student_id = :student_id AND (student_exercise.date_start <= NOW() AND student_exercise.date_end >= NOW() OR student_exercise.date_start IS NULL AND student_exercise.date_end IS NULL)");
     $stmt->execute(['student_id' => $studentId]);
     $exercises = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -64,16 +65,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if(isset($_POST['generate_task']) && isset($_POST['files'])) {
         $selectedFiles = $_POST['files'];
         $randomFile = $selectedFiles[array_rand($selectedFiles)];
+    
         $selectedExercise = array_filter($exercises, function($exercise) use ($randomFile) {
             return $exercise['file_name'] == $randomFile;
         });
         $selectedExercise = reset($selectedExercise);
         $selectedExerciseId = $selectedExercise['exercise_id'];
-
+    
         $fileName = "./uploads/" . $randomFile;
         $latexContent = file_get_contents($fileName);
+        
+      
+        
         $tasks = parseLatexFile($latexContent);
-        $randomTask = $tasks[array_rand($tasks)];
+        if ($tasks === false || empty($tasks)) {
+            echo "Failed to parse the file or the file does not contain tasks";
+        } else {
+            
+            $randomTask = $tasks[array_rand($tasks)];
+        }
+        
 
         $points = 0;
         $submitted = 0;
@@ -102,22 +113,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 }
-// function to parse latex data as "task" and "solution"
+
 function parseLatexFile($latexContent) {
     $tasks = array();
     preg_match_all('/\\\\begin{task}(.*?)\\\\end{task}.*?\\\\begin{solution}(.*?)\\\\end{solution}/s', $latexContent, $matches, PREG_SET_ORDER);
     foreach ($matches as $match) {
-        $task = preg_replace('/\\\\includegraphics{.*?}/', '', trim($match[1]));
-        $task = preg_replace('/\\\\dfrac{(.*?)}{(.*?)}/', '$1 / $2', $task);
-        $task = str_replace(['$', '\\\\'], ['', '<br>'], $task);
-        $solution = preg_replace('/\\\\begin{equation\*}|\\\\end{equation\*}|\\\dfrac|{|}/', '', trim($match[2]));
+        $imagePath = "";
+        if (preg_match('/\\\\includegraphics{(.*?)}/', $match[1], $imageMatch)) {
+            $imagePath = $imageMatch[1];
+        }
+        $task = preg_replace('/\\\\includegraphics{(.*?)}/', '', trim($match[1]));
+        $task = preg_replace('/\\\\dfrac{(.*?)}{(.*?)}/', '\\\\frac{$1}{$2}', $task);
+        $solution = trim($match[2]);
+        $solution = preg_replace('/\\\\begin{equation\*}(.*?)\\\\end{equation\*}/s', '$1', $solution); // удаление тегов equation
         $tasks[] = array(
             'task' => $task,
-            'solution' => trim($solution)
+            'imagePath' => $imagePath,
+            'solution' => $solution
         );
+       
     }
     return $tasks;
 }
+
+
+
+
+
 
 ?>
 <!DOCTYPE html>
@@ -127,6 +149,9 @@ function parseLatexFile($latexContent) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -135,6 +160,9 @@ function parseLatexFile($latexContent) {
             <li class="nav-item">
                 <a class="nav-link" href="./index.php"><?php echo $language['page_name']; ?></a>
             </li>
+            <li>
+            <a class="nav-link" href="./Documentation.php"><?php echo $language['documentation']; ?></a>
+        </li>
         </ul>
     </div>
     <div class="navbar-collapse justify-content-md-center" id="navbarsExample08">
@@ -170,9 +198,43 @@ function parseLatexFile($latexContent) {
         echo '<label><input type="checkbox" name="files[]" value="' . $exercise['file_name'] . '">' . $exercise['file_name'] . '</label><br>';
         }?>
     </form>
-    <!-- Show generated task -->
-    <?php if (isset($generatedTask)) echo "<p>" . $generatedTask . "</p>"; ?>
-</div>
+
+
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelectorAll('p.mathjax-latex').forEach((node) => {
+    MathJax.typesetPromise([node]).catch((err) => {
+      console.log('Error typesetting math: ' + err.message);
+    });
+  });
+});
+</script>
+
+<?php if (isset($randomTask)): ?>
+    <h2><?php echo $language['generated_task'];?></h2>
+    <?php if (!empty($randomTask['imagePath'])): ?>
+        <div><img src="/uploads/<?php echo $randomTask['imagePath']; ?>.jpg" alt="Task Image"></div>
+    <?php endif; ?>
+    <p class="mathjax-latex"><?php echo $randomTask["task"]; ?></p>
+    <form action="#" method="post">
+        <input type="hidden" name="submit_solution" value="true">
+        <input type="hidden" name="task_id" value="<?php echo $taskId; ?>">
+        <textarea name="solution"></textarea>
+        <button type="submit">Send</button>
+    </form>
+<?php endif; ?>
+
+
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

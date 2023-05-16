@@ -91,7 +91,7 @@ INSERT INTO `student_exercise` (`id`, `student_id`, `exercise_id`, `date_start`,
 CREATE TABLE `task` (
   `id` int UNSIGNED NOT NULL,
   `student_id` int UNSIGNED NOT NULL,
-  `excercise_id` int UNSIGNED NOT NULL,
+  `exercise_id` int UNSIGNED NOT NULL,
   `text` varchar(512) COLLATE utf8mb3_slovak_ci NOT NULL,
   `solution` varchar(512) COLLATE utf8mb3_slovak_ci NOT NULL,
   `submitted` tinyint NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE `task` (
 -- Dumping data for table `task`
 --
 
-INSERT INTO `task` (`id`, `student_id`, `excercise_id`, `text`, `solution`, `submitted`, `points`) VALUES
+INSERT INTO `task` (`id`, `student_id`, `exercise_id`, `text`, `solution`, `submitted`, `points`) VALUES
 (1, 1, 1, 'najdi 9', '1', 1, 5),
 (2, 1, 1, 'najdi 9', '1', 1, 0),
 (3, 1, 1, 'dsadasd', '432432', 0, 0);
@@ -149,7 +149,7 @@ ALTER TABLE `student`
 --
 ALTER TABLE `student_exercise`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `excercise_id` (`exercise_id`),
+  ADD KEY `exercise_id` (`exercise_id`),
   ADD KEY `student_id` (`student_id`);
 
 --
@@ -158,7 +158,7 @@ ALTER TABLE `student_exercise`
 ALTER TABLE `task`
   ADD PRIMARY KEY (`id`),
   ADD KEY `student_id` (`student_id`),
-  ADD KEY `excercise_id` (`excercise_id`);
+  ADD KEY `exercise_id` (`exercise_id`);
 
 --
 -- Indexes for table `teacher`
@@ -216,7 +216,7 @@ ALTER TABLE `student_exercise`
 --
 ALTER TABLE `task`
   ADD CONSTRAINT `task_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `task_ibfk_2` FOREIGN KEY (`excercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `task_ibfk_2` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

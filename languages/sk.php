@@ -2,6 +2,7 @@
 
 $language = [
     'page_name' => 'Login stránka',
+    'documentation'=>'Dokumentácia',
     'login_name' => 'Login meno',
     'password' => 'Heslo',
     'login' => 'Prihlásiť sa',
@@ -23,4 +24,5 @@ $language = [
     'generate_task' => 'Generovať úlohu',
     'yes' => 'Áno',
     'no' => 'Nie',
+    'generated_task'=>"Vygenerovaná úloha",
 ];

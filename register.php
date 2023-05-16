@@ -181,6 +181,9 @@ function teacherExists($db, $login) {
             <li class="nav-item">
                 <a class="nav-link" href="./index.php"><?php echo $language['page_name']; ?></a>
             </li>
+            <li>
+            <a class="nav-link" href="./Documentation.php"><?php echo $language['documentation']; ?></a>
+        </li>
         </ul>
     </div>
     <div class="navbar-collapse justify-content-md-center" id="navbarsExample08">

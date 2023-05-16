@@ -2,6 +2,7 @@
 
 $language = [
     'page_name' => 'Login page',
+    'documentation'=>'Documentation',
     'login_name' => 'Login name',
     'password' => 'Password',
     'login' => 'Log in',
@@ -23,4 +24,5 @@ $language = [
     'generate_task' => 'Generate task',
     'yes' => 'Yes',
     'no' => 'No',
+'generated_task'=>"Generated task",
 ];

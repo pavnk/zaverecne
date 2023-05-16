@@ -1,7 +1,8 @@
+var table;  
+
 function drawCountryTable(data) {
     var tableData = [];
 
-    // Iterate over each row of data
     for (let i = 0; i < data.length; ++i) {
         var rowData = {
             name: data[i].name,
@@ -14,7 +15,7 @@ function drawCountryTable(data) {
 
         tableData.push(rowData);
     }
-    var table = new Tabulator("#students", {
+    table = new Tabulator("#students", {
         data: tableData,
         layout: "fitColumns",
         columns: [
@@ -24,18 +25,27 @@ function drawCountryTable(data) {
             { title: "Generated exercises", field: "generatedExercises" },
             { title: "Submitted exercises", field: "submittedExercises" },
             { title: "Points earned", field: "earnedPoints" },
+            { title: "Info", field: "id", formatter: "html", cellClick: function(e, cell) {
+                window.open("studentTasks.php?id=" + cell.getValue());
+            }, 
+            formatter: function() {
+                return "<button class='btn btn-info'>Info</button>";
+            }
+            },
+        
         ],
     });
 
     table.on("rowClick", function(e, row){
         for(let i=0; i<data.length;++i){
             if(row.getData().name === data[i].name && row.getData().surname === data[i].surname){
-                window.open("/zaverecne/studentInfo.php?id="+ data[i].student_id);
+                window.open("studentInfo.php?id="+ data[i].student_id);
                 break;
             }
         }
     });
 }
+
 
 window.addEventListener("load", function () {
     fetch('get-students-all.php')
