@@ -145,26 +145,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
 
-<div>
+<div class="container text-center mt-5">
     <form method="POST" action="">
         <input type="hidden" name="id" value="<?php echo $studentId; ?>">
-        <label for="exercise">Select an exercise for this student:</label>
-        <select name="exercise" id="exercise">
-            <?php foreach ($exercises as $exercise): ?>
-                <option value="<?php echo $exercise['id']; ?>"><?php echo $exercise['file_name']; ?></option>
-            <?php endforeach; ?>
-        </select>
-        <br>
-        <label for="date-start">Start date:</label>
-        <input type="date" id="date-start" name="date-start">
-        <br>
-        <label for="date-end">End date:</label>
-        <input type="date" id="date-end" name="date-end">
-        <br>
-        <label for="max-points">Maximum obtainable points:</label>
-        <input type="number" id="max-points" name="max-points">
-        <br>
-        <input type="submit" name="exerciseSubmit" value="Submit">
+
+        <div class="form-group row">
+            <label for="exercise" class="col-sm-4 col-form-label text-right">Select an exercise for this student:</label>
+            <div class="col-sm-8">
+                <select name="exercise" id="exercise" class="form-control">
+                    <?php foreach ($exercises as $exercise): ?>
+                        <option value="<?php echo $exercise['id']; ?>"><?php echo $exercise['file_name']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="date-start" class="col-sm-4 col-form-label text-right">Start date:</label>
+            <div class="col-sm-8">
+                <input type="date" id="date-start" name="date-start" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="date-end" class="col-sm-4 col-form-label text-right">End date:</label>
+            <div class="col-sm-8">
+                <input type="date" id="date-end" name="date-end" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="max-points" class="col-sm-4 col-form-label text-right">Maximum obtainable points:</label>
+            <div class="col-sm-8">
+                <input type="number" id="max-points" name="max-points" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-12 text-center">
+                <input type="submit" name="exerciseSubmit" value="Submit" class="btn btn-primary">
+            </div>
+        </div>
     </form>
 </div>
 
