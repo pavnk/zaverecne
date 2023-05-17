@@ -1,6 +1,6 @@
-var table;  
+var table;
 
-function drawCountryTable(data) {
+function drawStudentTable(data) {
     var tableData = [];
 
     for (let i = 0; i < data.length; ++i) {
@@ -15,6 +15,7 @@ function drawCountryTable(data) {
 
         tableData.push(rowData);
     }
+
     table = new Tabulator("#students", {
         data: tableData,
         layout: "fitColumns",
@@ -25,26 +26,33 @@ function drawCountryTable(data) {
             { title: "Generated exercises", field: "generatedExercises" },
             { title: "Submitted exercises", field: "submittedExercises" },
             { title: "Points earned", field: "earnedPoints" },
-            { title: "Info", field: "id", formatter: "html", cellClick: function(e, cell) {
-                window.open("studentTasks.php?id=" + cell.getValue());
-            }, 
-            formatter: function() {
-                return "<button class='btn btn-info'>Info</button>";
-            }
+            {
+                title: "Info",
+                field: "id",
+                formatter: function(cell) {
+                    return "<button class='btn btn-info info-button' data-id='" + cell.getValue() + "'>Info</button>";
+                },
             },
-        
         ],
     });
 
-    table.on("rowClick", function(e, row){
-        for(let i=0; i<data.length;++i){
-            if(row.getData().name === data[i].name && row.getData().surname === data[i].surname){
-                window.open("studentInfo.php?id="+ data[i].student_id);
-                break;
+    document.querySelector("#students").addEventListener("click", function(e) {
+        var target = e.target;
+
+        if (target.classList.contains("info-button")) {
+            var studentId = target.getAttribute("data-id");
+            window.open("studentTasks.php?id=" + studentId);
+        } else {
+            var row = target.closest(".tabulator-row");
+            if (row) {
+                var rowData = table.getRow(row).getData();
+                window.open("studentInfo.php?id=" + rowData.id);
             }
         }
     });
+
 }
+
 
 
 window.addEventListener("load", function () {
@@ -53,6 +61,6 @@ window.addEventListener("load", function () {
             return response.json();
         })
         .then(function (data) {
-            drawCountryTable(data);
+            drawStudentTable(data);
         });
 }, false);

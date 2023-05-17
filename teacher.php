@@ -148,13 +148,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 <div class="container text-center mt-5">
-    <h1>Upload latex file</h1>
-<div>
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="form-control">
-        <input type="file" name="latexFile" id="latexFile" accept=".tex" required>
-        <input type="submit" name="upload" value="Upload">
-    </form>
-</div>
+    <h1>Upload LaTeX File</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="latexFile" id="latexFile" accept=".tex" required>
+                        <label class="custom-file-label" for="latexFile">Choose file</label>
+                        <div class="invalid-feedback">Please choose a LaTeX file.</div>
+                    </div>
+                </div>
+                <button type="submit" name="upload" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
+
 
 <div class="container text-center mt-5">
     <h1>All students</h1>
@@ -165,6 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <button id="exportBtn" class="btn btn-primary">Export to CSV</button>
 
+</div>
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
