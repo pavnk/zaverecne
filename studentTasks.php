@@ -49,11 +49,11 @@ try {
             Task ID: <?php echo $task['exercise_id']; ?><br>
             Task text: 
             <div class="math">
-            <?php echo ($task['text']); ?>
+            \( <?php echo ($task['text']); ?> \)
             </div>
             Task solution: 
             <div class="math">
-            <?php  echo ($task['solution']);  ?>
+            \( <?php  echo ($task['solution']);  ?> \)
             </div>
             Earned points: <?php echo $task['points']; ?><br>
             Submitted: <?php echo $task['submitted']; ?><br>
