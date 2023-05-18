@@ -2,8 +2,8 @@
 require_once('config.php');
 
 try {
-    $db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$database", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $query = "SELECT s.name, s.surname, s.id AS student_id,
        COUNT(t.id) AS generatedTasks,
@@ -13,7 +13,7 @@ try {
     LEFT JOIN task t ON s.id = t.student_id
     GROUP BY s.id";
 
-    $stmt = $db->query($query);
+    $stmt = $pdo->query($query);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch(PDOException $e) {
