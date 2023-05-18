@@ -95,8 +95,11 @@ CREATE TABLE `task` (
   `text` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
   `solution` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
   `submitted` tinyint NOT NULL,
-  `points` int NOT NULL
+  `points` int NOT NULL,
+  `assigned_to` int UNSIGNED NULL,
+  `completed` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
+
 
 -- --------------------------------------------------------
 
