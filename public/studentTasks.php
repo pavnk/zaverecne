@@ -18,7 +18,7 @@ $studentId = $_GET['id'];
 require_once 'config.php';
 
 try {
-    $db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
+    $db = new PDO("mysql:host=$host;port=$port;dbname=$database", $username, $password);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $stmt = $db->prepare("SELECT * FROM task WHERE student_id = :studentId");
