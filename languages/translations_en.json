@@ -1,0 +1,9 @@
+{
+  "name": "Name",
+  "surname": "Surname",
+  "id": "ID",
+  "generatedExercises": "Generated exercises",
+  "submittedExercises": "Submitted exercises",
+  "earnedPoints": "Points earned",
+  "info": "Info"
+}
