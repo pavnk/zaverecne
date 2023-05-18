@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 14, 2023 at 12:57 PM
+-- Generation Time: May 18, 2023 at 09:40 AM
 -- Server version: 8.0.32-0ubuntu0.22.04.2
 -- PHP Version: 8.2.4
 
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `exercise` (
   `id` int UNSIGNED NOT NULL,
-  `file_name` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL
+  `file_name` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
@@ -37,7 +37,8 @@ CREATE TABLE `exercise` (
 --
 
 INSERT INTO `exercise` (`id`, `file_name`) VALUES
-(1, 'blokovka01pr.tex');
+(2, 'blokovka01pr.tex'),
+(3, 'blokovka02pr.tex');
 
 -- --------------------------------------------------------
 
@@ -47,10 +48,10 @@ INSERT INTO `exercise` (`id`, `file_name`) VALUES
 
 CREATE TABLE `student` (
   `id` int UNSIGNED NOT NULL,
-  `login` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `password` varchar(512) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `name` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `surname` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL
+  `login` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `password` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `surname` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
@@ -68,7 +69,6 @@ INSERT INTO `student` (`id`, `login`, `password`, `name`, `surname`) VALUES
 
 CREATE TABLE `student_exercise` (
   `id` int UNSIGNED NOT NULL,
-  `student_id` int UNSIGNED NOT NULL,
   `exercise_id` int UNSIGNED NOT NULL,
   `date_start` date DEFAULT NULL,
   `date_end` date DEFAULT NULL,
@@ -79,8 +79,8 @@ CREATE TABLE `student_exercise` (
 -- Dumping data for table `student_exercise`
 --
 
-INSERT INTO `student_exercise` (`id`, `student_id`, `exercise_id`, `date_start`, `date_end`, `max_points`) VALUES
-(1, 1, 1, '2023-05-03', '2023-05-05', 5);
+INSERT INTO `student_exercise` (`id`, `exercise_id`, `date_start`, `date_end`, `max_points`) VALUES
+(2, 2, '2023-05-02', '2023-05-27', 10);
 
 -- --------------------------------------------------------
 
@@ -92,20 +92,11 @@ CREATE TABLE `task` (
   `id` int UNSIGNED NOT NULL,
   `student_id` int UNSIGNED NOT NULL,
   `exercise_id` int UNSIGNED NOT NULL,
-  `text` varchar(512) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `solution` varchar(512) COLLATE utf8mb3_slovak_ci NOT NULL,
+  `text` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `solution` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
   `submitted` tinyint NOT NULL,
   `points` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
-
---
--- Dumping data for table `task`
---
-
-INSERT INTO `task` (`id`, `student_id`, `exercise_id`, `text`, `solution`, `submitted`, `points`) VALUES
-(1, 1, 1, 'najdi 9', '1', 1, 5),
-(2, 1, 1, 'najdi 9', '1', 1, 0),
-(3, 1, 1, 'dsadasd', '432432', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -115,10 +106,10 @@ INSERT INTO `task` (`id`, `student_id`, `exercise_id`, `text`, `solution`, `subm
 
 CREATE TABLE `teacher` (
   `id` int UNSIGNED NOT NULL,
-  `login` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `password` varchar(512) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `name` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL,
-  `surname` varchar(64) COLLATE utf8mb3_slovak_ci NOT NULL
+  `login` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `password` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `surname` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
@@ -126,7 +117,8 @@ CREATE TABLE `teacher` (
 --
 
 INSERT INTO `teacher` (`id`, `login`, `password`, `name`, `surname`) VALUES
-(1, 'xpavlisn', '$argon2id$v=19$m=65536,t=4,p=1$elIuVURCaW5VOVZKeXNORg$ZGNub829i6LTqGs0Cw0v42mRroIPqvQxcdjo/upJG/g', 'Nikolas', 'Pavlis');
+(1, 'xpavlisn', '$argon2id$v=19$m=65536,t=4,p=1$elIuVURCaW5VOVZKeXNORg$ZGNub829i6LTqGs0Cw0v42mRroIPqvQxcdjo/upJG/g', 'Nikolas', 'Pavlis'),
+(2, 'teacher', '$argon2id$v=19$m=65536,t=4,p=1$NmdEY0NxcUI0czF0RjY3bg$yRU0/oqIaZNLpp6tyLRkXME1UlS5KFJWXaz/UQqvaYY', 'teacher', 'teacher');
 
 --
 -- Indexes for dumped tables
@@ -149,8 +141,7 @@ ALTER TABLE `student`
 --
 ALTER TABLE `student_exercise`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `exercise_id` (`exercise_id`),
-  ADD KEY `student_id` (`student_id`);
+  ADD KEY `exercise_id` (`exercise_id`);
 
 --
 -- Indexes for table `task`
@@ -174,7 +165,7 @@ ALTER TABLE `teacher`
 -- AUTO_INCREMENT for table `exercise`
 --
 ALTER TABLE `exercise`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `student`
@@ -186,7 +177,7 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `student_exercise`
 --
 ALTER TABLE `student_exercise`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `task`
@@ -198,7 +189,7 @@ ALTER TABLE `task`
 -- AUTO_INCREMENT for table `teacher`
 --
 ALTER TABLE `teacher`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -208,8 +199,7 @@ ALTER TABLE `teacher`
 -- Constraints for table `student_exercise`
 --
 ALTER TABLE `student_exercise`
-  ADD CONSTRAINT `student_exercise_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `student_exercise_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `student_exercise_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `task`

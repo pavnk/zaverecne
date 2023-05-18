@@ -40,44 +40,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['user_role'])) {
             $selectedUserRole = $_POST['user_role'];
             if (studentExist($pdo, $_POST['login']) === true) {
-                $errmsg .= "User with this e-mail / login already exists.</p>";
+                $errmsg .="<p>". $language['user_exists']."</p>";
             }
             if (teacherExists($pdo, $_POST['login']) === true) {
-                $errmsg .= "User with this e-mail / login already exists.</p>";
+                $errmsg .="<p>". $language['user_exists']."</p>";
             }
         }
 
         if (checkEmpty($_POST['login']) === true) {
-            $errmsg .= "<p>Put in login.</p>";
+            $errmsg .= "<p>".$language['login_not']."</p>";
         } elseif (checkLength($_POST['login'], 6,32) === false) {
-            $errmsg .= "<p>Login has to be min. 6 and max. 32 symbols.</p>";
+            $errmsg .= "<p>".$language['login_req']."</p>";
         } elseif (checkUsername($_POST['login']) === false) {
-            $errmsg .= "<p>Login can contain only small, large letters, numbers and underscore.</p>";
+            $errmsg .= "<p>".$language['login_req']."</p>";
         }
 
 
         if(checkEmpty($_POST['password']) === true){
-            $errmsg .="<p>Put in password.</p>";
+            $errmsg .="<p>".$language['password_not']."</p>";
         } elseif(checkLength($_POST['password'],6,32) === false) {
-            $errmsg .= "<p>Password needs to be at least 6 symbols long.</p>";
+            $errmsg .= "<p>".$language['password_req']."</p>";
         } elseif(checkPassword($_POST['password']) === true) {
-            $errmsg .= "<p>Password can contain only small, large letters, numbers.</p>";
+            $errmsg .= "<p>".$language['password_req']."</p>";
         }
 
         if(checkEmpty($_POST['name']) === true){
-            $errmsg .="<p>Put in name.</p>";
+            $errmsg .="<p>".$language['name_not']."</p>";
         } elseif(checkLength($_POST['name'],1,32) === false) {
-            $errmsg .= "<p>Name has to be at least 1 symbol long.</p>";
+            $errmsg .= "<p>".$language['name_req']."</p>";
         } elseif(checkName($_POST['name']) === false){
-            $errmsg .= "<p>Name can contain only small, large letters.</p>";
+            $errmsg .= "<p>".$language['name_req']."</p>";
         }
 
         if(checkEmpty($_POST['surname']) === true){
-            $errmsg .="<p>Put in surname.</p>";
+            $errmsg .="<p>".$language['surname_not']."</p>";
         } elseif(checkLength($_POST['surname'],1,32) === false) {
-            $errmsg .= "<p>Surname needs to be at lest 1 symbol long.</p>";
+            $errmsg .= "<p>".$language['surname_req']."</p>";
         } elseif(checkName($_POST['surname']) === false){
-            $errmsg .= "<p>Surname can contain only small, large letters.</p>";
+            $errmsg .= "<p>".$language['surname_req']."</p>";
         }
 
         if (empty($errmsg)) {
@@ -98,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset($stmt);
             $msg = $language['registration_success'];
         } else {
-            echo $errmsg;
+
         }
         unset($pdo);
     }
@@ -241,7 +241,7 @@ function teacherExists($db, $login) {
         </fieldset>
         <br>
         <button type="submit" name="register" class="btn btn-primary">Create account</button>
-
+        <br>
         <?php
         if (!empty($errmsg)) {
             echo $errmsg;
