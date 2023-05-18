@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 require_once 'config.php';
 
@@ -29,7 +26,7 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
 require_once 'config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$database", $username, $password);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$database", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $stmt = $pdo->prepare("SELECT e.id, e.file_name
                           FROM exercise e
@@ -201,6 +198,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 <button type="submit" name="upload" class="btn btn-primary">Upload</button>
+                <?php
+                if(isset($msg)) {
+                    if ($msg != "") {
+                        echo '<p>' . $msg . '</p>';
+                    }
+                }
+                ?>
             </form>
         </div>
     </div>
