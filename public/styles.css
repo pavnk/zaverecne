@@ -50,3 +50,51 @@
     border: 1px solid #ced4da;
     border-radius: 0.25rem 0 0 0.25rem;
 }
+
+.checkbox-container {
+    margin-top: 20px;
+}
+
+.checkbox-label {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    user-select: none;
+}
+
+.checkbox-label input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkbox-label span:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    border: 2px solid #555;
+}
+
+.checkbox-label input:checked ~ span:before {
+    background-color: #555;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-between; /* if you want some space between the elements */
+}
+
+
+.task-section {
+    width: 45%; /* adjust according to your needs */
+}

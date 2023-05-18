@@ -42,26 +42,32 @@ try {
     <title>Student Tasks</title>
 </head>
 <body>
-    <h1>Student Tasks</h1>
-    <button style="background-color:#c4c2bb" class="btn" onclick="location.href='teacher.php'">Back</button>
+<h1 class="mb-4">Student Tasks</h1>
+<button class="btn btn-secondary mb-4" onclick="location.href='teacher.php'">Back</button>
+<div class="container">
     <?php foreach ($studentTasks as $task): ?>
-        <p>
-            Task ID: <?php echo $task['exercise_id']; ?><br>
-            Task text: 
-            <div class="math">
-            \( <?php echo ($task['text']); ?> \)
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Task ID: <?php echo $task['exercise_id']; ?></h5>
+                <p class="card-text">
+                    Task text:
+                <div class="math mathjax-latex">
+                    \( <?php echo ($task['text']); ?> \)
+                </div>
+                </p>
+                <p class="card-text">
+                    Task solution:
+                <div class="math mathjax-latex">
+                    \( <?php  echo ($task['solution']);  ?> \)
+                </div>
+                </p>
+                <p class="card-text">Earned points: <?php echo $task['points']; ?></p>
+                <p class="card-text">Submitted: <?php echo $task['submitted']; ?></p>
             </div>
-            Task solution: 
-            <div class="math">
-            \( <?php  echo ($task['solution']);  ?> \)
-            </div>
-            Earned points: <?php echo $task['points']; ?><br>
-            Submitted: <?php echo $task['submitted']; ?><br>
-            
-        </p>
+        </div>
     <?php endforeach; ?>
+</div>
 </body>
+
+
 </html>
-
-
-
