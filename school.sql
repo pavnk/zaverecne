@@ -2,10 +2,10 @@
 -- version 5.2.1deb1+jammy2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: May 18, 2023 at 09:40 AM
--- Server version: 8.0.32-0ubuntu0.22.04.2
--- PHP Version: 8.2.4
+-- Hostiteľ: localhost:3306
+-- Čas generovania: Št 18.Máj 2023, 20:52
+-- Verzia serveru: 8.0.32-0ubuntu0.22.04.2
+-- Verzia PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `school`
+-- Databáza: `school`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exercise`
+-- Štruktúra tabuľky pre tabuľku `exercise`
 --
 
 CREATE TABLE `exercise` (
@@ -33,17 +33,17 @@ CREATE TABLE `exercise` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
--- Dumping data for table `exercise`
+-- Sťahujem dáta pre tabuľku `exercise`
 --
 
 INSERT INTO `exercise` (`id`, `file_name`) VALUES
-(2, 'blokovka01pr.tex'),
-(3, 'blokovka02pr.tex');
+(4, 'odozva01pr.tex'),
+(5, 'blokovka01pr.tex');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `student`
+-- Štruktúra tabuľky pre tabuľku `student`
 --
 
 CREATE TABLE `student` (
@@ -55,16 +55,17 @@ CREATE TABLE `student` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
--- Dumping data for table `student`
+-- Sťahujem dáta pre tabuľku `student`
 --
 
 INSERT INTO `student` (`id`, `login`, `password`, `name`, `surname`) VALUES
-(1, 'doctah', '$argon2id$v=19$m=65536,t=4,p=1$OThrRGU0TjFkSzliV0p4ZA$CRt8K5SIC3dK+3JzsnUlGQ3InOUrh8U9IdD1/V6nvXw', 'Dominik', 'Racek');
+(1, 'doctah', '$argon2id$v=19$m=65536,t=4,p=1$OThrRGU0TjFkSzliV0p4ZA$CRt8K5SIC3dK+3JzsnUlGQ3InOUrh8U9IdD1/V6nvXw', 'Dominik', 'Racek'),
+(2, 'student', '$argon2id$v=19$m=65536,t=4,p=1$bmhzcWltaFdVLy5neDkyTQ$Q8LTONtL8S4NxdgqFqGe5o53fJwBnVZBXfQTU0ef3Vc', 'Student', 'Student');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `student_exercise`
+-- Štruktúra tabuľky pre tabuľku `student_exercise`
 --
 
 CREATE TABLE `student_exercise` (
@@ -76,16 +77,17 @@ CREATE TABLE `student_exercise` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
--- Dumping data for table `student_exercise`
+-- Sťahujem dáta pre tabuľku `student_exercise`
 --
 
 INSERT INTO `student_exercise` (`id`, `exercise_id`, `date_start`, `date_end`, `max_points`) VALUES
-(2, 2, '2023-05-02', '2023-05-27', 10);
+(3, 4, '2023-05-18', '2023-05-20', 5),
+(4, 5, '2023-05-18', '2023-05-20', 5);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `task`
+-- Štruktúra tabuľky pre tabuľku `task`
 --
 
 CREATE TABLE `task` (
@@ -94,17 +96,37 @@ CREATE TABLE `task` (
   `exercise_id` int UNSIGNED NOT NULL,
   `text` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
   `solution` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_slovak_ci NOT NULL,
+  `your_solution` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_slovak_ci NOT NULL,
   `submitted` tinyint NOT NULL,
   `points` int NOT NULL,
-  `assigned_to` int UNSIGNED NULL,
-  `completed` tinyint(1) NOT NULL DEFAULT 0
+  `assigned_to` int UNSIGNED DEFAULT NULL,
+  `completed` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
+--
+-- Sťahujem dáta pre tabuľku `task`
+--
+
+INSERT INTO `task` (`id`, `student_id`, `exercise_id`, `text`, `solution`, `your_solution`, `submitted`, `points`, `assigned_to`, `completed`) VALUES
+(5, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{35}{(2s+5)^2}e^{-6s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{7}{5}-\\dfrac{7}{5}e^{-\\frac{5}{2}(t-6)}-\\dfrac{7}{2}(t-6)e^{-\\frac{5}{2}(t-6)} \\right] \\eta(t-6)\n    ', '', 0, 0, NULL, 0),
+(6, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{12}{(5s+4)^2}e^{-7s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{4}-\\dfrac{3}{4}e^{-\\frac{4}{5}(t-7)}-\\dfrac{3}{5}(t-7)e^{-\\frac{4}{5}(t-7)} \\right] \\eta(t-7)\n    ', '', 0, 0, NULL, 0),
+(7, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{6}{(5s+2)^2}e^{-4s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{2}-\\dfrac{3}{2}e^{-\\frac{2}{5}(t-4)}-\\dfrac{3}{5}(t-4)e^{-\\frac{2}{5}(t-4)} \\right] \\eta(t-4)\n    ', '', 0, 0, NULL, 0),
+(8, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{35}{(2s+5)^2}e^{-6s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{7}{5}-\\dfrac{7}{5}e^{-\\frac{5}{2}(t-6)}-\\dfrac{7}{2}(t-6)e^{-\\frac{5}{2}(t-6)} \\right] \\eta(t-6)\n    ', '', 0, 0, NULL, 0),
+(15, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{6}{(5s+2)^2}e^{-4s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{2}-\\dfrac{3}{2}e^{-\\frac{2}{5}(t-4)}-\\dfrac{3}{5}(t-4)e^{-\\frac{2}{5}(t-4)} \\right] \\eta(t-4)\n    ', '', 0, 0, NULL, 0),
+(16, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{12}{(5s+4)^2}e^{-7s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{4}-\\dfrac{3}{4}e^{-\\frac{4}{5}(t-7)}-\\dfrac{3}{5}(t-7)e^{-\\frac{4}{5}(t-7)} \\right] \\eta(t-7)\n    ', '', 0, 0, NULL, 0),
+(17, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{12}{(5s+4)^2}e^{-7s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{4}-\\dfrac{3}{4}e^{-\\frac{4}{5}(t-7)}-\\dfrac{3}{5}(t-7)e^{-\\frac{4}{5}(t-7)} \\right] \\eta(t-7)\n    ', '', 0, 0, NULL, 0),
+(18, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{35}{(2s+5)^2}e^{-6s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{7}{5}-\\dfrac{7}{5}e^{-\\frac{5}{2}(t-6)}-\\dfrac{7}{2}(t-6)e^{-\\frac{5}{2}(t-6)} \\right] \\eta(t-6)\n    ', '', 0, 0, NULL, 0),
+(19, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{6}{(5s+2)^2}e^{-4s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{2}-\\dfrac{3}{2}e^{-\\frac{2}{5}(t-4)}-\\dfrac{3}{5}(t-4)e^{-\\frac{2}{5}(t-4)} \\right] \\eta(t-4)\n    ', '', 0, 0, NULL, 0),
+(21, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{6}{(5s+2)^2}e^{-4s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{3}{2}-\\dfrac{3}{2}e^{-\\frac{2}{5}(t-4)}-\\dfrac{3}{5}(t-4)e^{-\\frac{2}{5}(t-4)} \\right] \\eta(t-4)\n    ', '', 0, 0, NULL, 0),
+(22, 2, 5, 'Nájdite prenosovú funkciu $F(s)=\\frac{Y(s)}{W(s)}$ pre systém opísaný blokovou schémou: \n\n    ', '\n        \\dfrac{2s^2+13s+10}{s^3+7s^2+18s+15}\n    ', '', 0, 0, NULL, 0),
+(23, 2, 5, 'Nájdite prenosovú funkciu $F(s)=\\frac{Y(s)}{W(s)}$ pre systém opísaný blokovou schémou: \n\n    ', '\n        \\dfrac{2s^2+13s+10}{s^3+7s^2+18s+15}\n    ', '', 0, 0, NULL, 0),
+(24, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{35}{(2s+5)^2}e^{-6s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{7}{5}-\\dfrac{7}{5}e^{-\\frac{5}{2}(t-6)}-\\dfrac{7}{2}(t-6)e^{-\\frac{5}{2}(t-6)} \\right] \\eta(t-6)\n    ', '', 0, 0, NULL, 0),
+(25, 2, 4, 'Vypočítajte prechodovú funkciu pre systém opísaný prenosovou funkciou\n    \\begin{equation*}\n        F(s)=\\frac{35}{(2s+5)^2}e^{-6s}\n    \\end{equation*}', '\n        y(t)=\\left[ \\dfrac{7}{5}-\\dfrac{7}{5}e^{-\\frac{5}{2}(t-6)}-\\dfrac{7}{2}(t-6)e^{-\\frac{5}{2}(t-6)} \\right] \\eta(t-6)\n    ', '', 0, 0, NULL, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `teacher`
+-- Štruktúra tabuľky pre tabuľku `teacher`
 --
 
 CREATE TABLE `teacher` (
@@ -116,7 +138,7 @@ CREATE TABLE `teacher` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_slovak_ci;
 
 --
--- Dumping data for table `teacher`
+-- Sťahujem dáta pre tabuľku `teacher`
 --
 
 INSERT INTO `teacher` (`id`, `login`, `password`, `name`, `surname`) VALUES
@@ -124,30 +146,30 @@ INSERT INTO `teacher` (`id`, `login`, `password`, `name`, `surname`) VALUES
 (2, 'teacher', '$argon2id$v=19$m=65536,t=4,p=1$NmdEY0NxcUI0czF0RjY3bg$yRU0/oqIaZNLpp6tyLRkXME1UlS5KFJWXaz/UQqvaYY', 'teacher', 'teacher');
 
 --
--- Indexes for dumped tables
+-- Kľúče pre exportované tabuľky
 --
 
 --
--- Indexes for table `exercise`
+-- Indexy pre tabuľku `exercise`
 --
 ALTER TABLE `exercise`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `student`
+-- Indexy pre tabuľku `student`
 --
 ALTER TABLE `student`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `student_exercise`
+-- Indexy pre tabuľku `student_exercise`
 --
 ALTER TABLE `student_exercise`
   ADD PRIMARY KEY (`id`),
   ADD KEY `exercise_id` (`exercise_id`);
 
 --
--- Indexes for table `task`
+-- Indexy pre tabuľku `task`
 --
 ALTER TABLE `task`
   ADD PRIMARY KEY (`id`),
@@ -155,57 +177,57 @@ ALTER TABLE `task`
   ADD KEY `exercise_id` (`exercise_id`);
 
 --
--- Indexes for table `teacher`
+-- Indexy pre tabuľku `teacher`
 --
 ALTER TABLE `teacher`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT pre exportované tabuľky
 --
 
 --
--- AUTO_INCREMENT for table `exercise`
+-- AUTO_INCREMENT pre tabuľku `exercise`
 --
 ALTER TABLE `exercise`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `student`
+-- AUTO_INCREMENT pre tabuľku `student`
 --
 ALTER TABLE `student`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `student_exercise`
---
-ALTER TABLE `student_exercise`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `task`
+-- AUTO_INCREMENT pre tabuľku `student_exercise`
 --
-ALTER TABLE `task`
+ALTER TABLE `student_exercise`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `teacher`
+-- AUTO_INCREMENT pre tabuľku `task`
+--
+ALTER TABLE `task`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT pre tabuľku `teacher`
 --
 ALTER TABLE `teacher`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Constraints for dumped tables
+-- Obmedzenie pre exportované tabuľky
 --
 
 --
--- Constraints for table `student_exercise`
+-- Obmedzenie pre tabuľku `student_exercise`
 --
 ALTER TABLE `student_exercise`
   ADD CONSTRAINT `student_exercise_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `task`
+-- Obmedzenie pre tabuľku `task`
 --
 ALTER TABLE `task`
   ADD CONSTRAINT `task_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

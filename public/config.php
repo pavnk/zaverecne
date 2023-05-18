@@ -1,7 +1,6 @@
 <?php
-$host = 'db';
-$port = '3306';
+$host = 'localhost';
 $database = 'school';
-$username = 'user1';
-$password = 'password1';
+$username = 'username';
+$password = 'password';
 ?>
