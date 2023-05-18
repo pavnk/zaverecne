@@ -21,7 +21,7 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
 
 
 try {
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$database", $username, $password);
+    $pdo = new PDO("mysql:host=$host;dbname=$database", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
     echo $e->getMessage();
@@ -194,9 +194,6 @@ function parseLatexFile($latexContent) {
     <div class="task-section">
         <?php if (isset($randomTask)): ?>
             <h2><?php echo $language['generated_task'];?></h2>
-            <?php if (!empty($randomTask['imagePath'])): ?>
-                <div><img src="/uploads/<?php echo $randomTask['imagePath']; ?>.jpg" alt="Task Image"></div>
-            <?php endif; ?>
             <p class="mathjax-latex"><?php echo $randomTask["task"]; ?></p>
             <form action="#" method="post">
                 <input type="hidden" name="submit_solution" value="true">
