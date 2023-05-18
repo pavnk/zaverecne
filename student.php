@@ -158,7 +158,7 @@ function parseLatexFile($latexContent) {
     <div class=" navbar-collapse justify-content-md-center" id="navbarsExample08">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="./index.php"><?php echo $language['page_name']; ?></a>
+                <a class="nav-link" href="./index.php"><?php echo $language['main_page']; ?></a>
             </li>
             <li>
             <a class="nav-link" href="./Documentation.php"><?php echo $language['documentation']; ?></a>
