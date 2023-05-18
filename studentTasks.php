@@ -1,6 +1,18 @@
 <?php
 session_start();
 
+if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
+    if($_SESSION["user_type"] != "teacher"){
+        header('Location: index.php');
+        exit();
+    }
+} else {
+    header('Location: index.php');
+    exit();
+}
+
+
+
 $studentId = $_GET['id'];
 
 require_once 'config.php';
