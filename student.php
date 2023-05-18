@@ -33,9 +33,10 @@ try {
 
 if(isset($_SESSION["user_id"])) {
     $studentId = $_SESSION["user_id"];
-    $stmt = $pdo->prepare("SELECT * FROM student_exercise INNER JOIN exercise ON student_exercise.exercise_id = exercise.id WHERE student_exercise.student_id = :student_id AND (student_exercise.date_start <= NOW() AND student_exercise.date_end >= NOW() OR student_exercise.date_start IS NULL AND student_exercise.date_end IS NULL)");
-    $stmt->execute(['student_id' => $studentId]);
+    $stmt = $pdo->prepare("SELECT * FROM exercise LEFT JOIN student_exercise ON exercise.id = student_exercise.exercise_id WHERE (student_exercise.date_start <= NOW() AND student_exercise.date_end >= NOW() OR student_exercise.date_start IS NULL AND student_exercise.date_end IS NULL)");
+    $stmt->execute();
     $exercises = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
 
 }
 
@@ -74,21 +75,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
         $fileName = "./uploads/" . $randomFile;
         $latexContent = file_get_contents($fileName);
-        
-      
-        
+    
         $tasks = parseLatexFile($latexContent);
         if ($tasks === false || empty($tasks)) {
             echo "Failed to parse the file or the file does not contain tasks";
         } else {
-            
             $randomTask = $tasks[array_rand($tasks)];
+            $_SESSION["taskId"] = $selectedExerciseId; 
         }
-        
-
+    
         $points = 0;
         $submitted = 0;
-
+    
         $stmt = $pdo->prepare("INSERT INTO task (student_id, exercise_id, text, solution, points, submitted)
                         VALUES (:student_id, :exercise_id, :text, :solution, :points, :submitted)");
         $stmt->bindParam(':student_id', $studentId);
@@ -97,21 +95,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':solution', $randomTask["solution"]);
         $stmt->bindParam(':points', $points);
         $stmt->bindParam(':submitted', $submitted);
-
+    
         $stmt->execute();
+    
 
-        // Save generated task to a variable
         $generatedTask = $randomTask["task"];
     }
-
-    if(isset($_POST['submit_solution']) && isset($_POST['task_id']) && isset($_POST['solution']) && isset($_SESSION["user_id"])){
-        $taskId = $_POST['task_id'];
+    
+    if(isset($_POST['submit_solution']) && isset($_POST['exercise_id']) && isset($_POST['solution']) && isset($_SESSION["user_id"])){
+        $taskId = $_POST['exercise_id'];
         $solution = $_POST['solution'];
+        $completed = 0; 
 
-        $stmt = $pdo->prepare("UPDATE task SET completed = TRUE, solution = :solution WHERE id = :task_id AND assigned_to = :user_id");
-        $stmt->execute(['solution' => $solution, 'task_id' => $taskId, 'user_id' => $_SESSION["user_id"]]);
+        $stmt = $pdo->prepare("UPDATE task SET completed = TRUE, solution = :solution WHERE id = :exercise_id AND assigned_to = :user_id");
+        $stmt->execute(['solution' => $solution, 'exercise_id' => $taskId, 'user_id' => $_SESSION["user_id"]]);
     }
-
+    
 }
 
 function parseLatexFile($latexContent) {
@@ -125,7 +124,7 @@ function parseLatexFile($latexContent) {
         $task = preg_replace('/\\\\includegraphics{(.*?)}/', '', trim($match[1]));
         $task = preg_replace('/\\\\dfrac{(.*?)}{(.*?)}/', '\\\\frac{$1}{$2}', $task);
         $solution = trim($match[2]);
-        $solution = preg_replace('/\\\\begin{equation\*}(.*?)\\\\end{equation\*}/s', '$1', $solution); // удаление тегов equation
+        $solution = preg_replace('/\\\\begin{equation\*}(.*?)\\\\end{equation\*}/s', '$1', $solution); 
         $tasks[] = array(
             'task' => $task,
             'imagePath' => $imagePath,
@@ -228,7 +227,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     <p class="mathjax-latex"><?php echo $randomTask["task"]; ?></p>
     <form action="#" method="post">
         <input type="hidden" name="submit_solution" value="true">
-        <input type="hidden" name="task_id" value="<?php echo $taskId; ?>">
+        <input type="hidden" name="exercise_id" value="<?php echo $taskId; ?>">
         <textarea name="solution"></textarea>
         <button type="submit">Send</button>
     </form>
