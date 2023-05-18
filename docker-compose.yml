@@ -17,8 +17,8 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: root_password
             MYSQL_DATABASE: school
-            MYSQL_USER: user1
-            MYSQL_PASSWORD: password1
+            MYSQL_USER: xpavlisn
+            MYSQL_PASSWORD: etrAy2Y0xJxwMmq
         ports:
             - "9906:3306"
         volumes:

@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once('config.php');
 
 if(!isset($_SESSION['language'])){
@@ -25,7 +21,7 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]){
 
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$database", $username, $password);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$database", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
     echo $e->getMessage();

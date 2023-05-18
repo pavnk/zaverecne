@@ -48,4 +48,11 @@ $language = [
     'submit' => "Submit",
     'export_csv' => "Export to CSV",
     'main_page' => "Main page",
+    'tasks_page' => "Student tasks",
+    'back' => "Back",
+    'task' => "Task id",
+    'task_text' => "Task text",
+    'task_solution' => "Task solution",
+    'earned_points' => "Earned points",
+    'submitted' => "Submitted",
 ];

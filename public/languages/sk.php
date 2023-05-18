@@ -48,4 +48,11 @@ $language = [
     'submit' => "Odoslať",
     'export_csv' => "Exportovať do CSV",
     'main_page' => "Hlavná stránka",
+    'tasks_page' => "Úlohy",
+    'back' => "Naspäť",
+    'task' => "Id úlohy",
+    'task_text' => "Zadanie úlohy",
+    'task_solution' => "Riešenie",
+    'earned_points' => "Získané body",
+    'submitted' => "Odovzdané",
 ];
